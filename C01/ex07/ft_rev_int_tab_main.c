@@ -29,9 +29,9 @@ int		main(void)
 		index++;
 	}
 	first_pointer = &numbers[0];
-	printf("before");
+	printf("before: ");
 	counter(numbers, 9);
 	ft_rev_int_tab(first_pointer, 9);
-	printf("\nafter : ");
+	printf("\nafter: ");
 	counter(numbers, 9);
 }
