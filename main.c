@@ -1,3 +1,10 @@
+//
+//  main.c
+//  est2
+//
+//  Created by Onur Sen on 9/4/22.
+//
+
 #include <stdio.h>
 
 #include <unistd.h>
@@ -29,25 +36,25 @@ void ft_printer(int arr[N][N])
     }
 }
 
-int	colup_counter(int arr[N][N], int colnum, int size)
+int    colup_counter(int arr[N][N], int colnum, int size)
 {
-	int	i;
-	int	max;
-	int	counter;
+    int    i;
+    int    max;
+    int    counter;
 
-	counter = 0;
-	max = 0;
-	i = -1;
-	while (++i < N)
-	{
-		if (arr[i][colnum] > max)
-		{
-			max = arr[i][colnum];
-			counter++;
-		}
-	}
-	if (size == counter)
-		return (1);
+    counter = 0;
+    max = 0;
+    i = -1;
+    while (++i < N)
+    {
+        if (arr[i][colnum] > max)
+        {
+            max = arr[i][colnum];
+            counter++;
+        }
+    }
+    if (size == counter)
+        return (1);
     return (0);
 }
 
@@ -73,7 +80,7 @@ int    coldown_counter(int arr[N][N], int colnum, int size)
     return (0);
 }
 
-int    rowright_counter(int arr[N][N], int rownum, int size)
+int    rowleft_counter(int arr[N][N], int rownum, int size)
 {
     int    i;
     int    max;
@@ -95,7 +102,7 @@ int    rowright_counter(int arr[N][N], int rownum, int size)
     return (0);
 }
 
-int    rowleft_counter(int arr[N][N], int rownum, int size)
+int    rowright_counter(int arr[N][N], int rownum, int size)
 {
     int    i;
     int    max;
@@ -103,14 +110,15 @@ int    rowleft_counter(int arr[N][N], int rownum, int size)
 
     counter = 0;
     max = 0;
-    i = 4;
-    while (--i >= 0)
+    i = 3;
+    while (i >= 0)
     {
         if (arr[rownum][i] > max)
         {
             max = arr[rownum][i];
             counter++;
         }
+        i--;
     }
     if (size == counter)
         return (1);
@@ -145,7 +153,7 @@ int col_checker(int arr[N][N], char argv[N][N])
     {
         col1 = argv[0][x] - '0';
         col2 = argv[1][x] - '0';
-        if (flag == 1 && coldown_counter(arr, x, col1) == 1 && coldown_counter(arr, x, col2) == 1)
+        if (flag == 1 && colup_counter(arr, x, col1) == 1 && coldown_counter(arr, x, col2) == 1)
             flag = 1;
         else
             flag = 0;
@@ -167,7 +175,7 @@ int row_checker(int arr[N][N], char argv[N][N])
     {
         row1 = argv[2][x] - '0';
         row2 = argv[3][x] - '0';
-        if (flag == 1 && rowleft_counter(arr, x, row1) == 1 && rowright_counter(arr, x, row2) == 1)
+        if (flag == 1 && rowleft_counter(arr, x, row1) && rowright_counter(arr, x, row2))
             flag = 1;
         else
             flag = 0;
@@ -234,7 +242,33 @@ int solver(int arr[N][N], int rownum, int colnum, char argv[N][N])
     return (0);
 }
 
-void num_generator(int arr[N][N], int size)
+int solve(int arr[N][N], int rownum, int colnum)
+{
+    int x;
+    if (colnum == N && rownum == N - 1 )
+        return (1);
+    if (colnum == N)
+    {
+        rownum++;
+        colnum = 0;
+    }
+    if (arr[rownum][colnum] > 0)
+        return (solve(arr, rownum, colnum + 1));
+    x = 0;
+    while (++x <= N)
+    {
+        if (is_safe(arr, rownum, colnum, x) == 1)
+        {
+            arr[rownum][colnum] = x;
+            if (solve(arr, rownum, colnum + 1) == 1)
+                return(1);
+        }
+        arr[rownum][colnum] = 0;
+    }
+    return (0);
+}
+
+void num_generator(int arr[N][N])
 {
     int x;
     int y;
@@ -276,10 +310,10 @@ int main(int ac, char **av)
     char argv[N][N];
     int arr[N][N];
     
-    inp = av[1];
-    num_generator(arr, N);
+    inp = "4 3 2 1 1 2 2 2 4 3 2 1 1 2 2 2";
+    num_generator(arr);
     args_generator(argv, inp);
-    if (solver(arr, 0, 0,  argv) == 1)
+    if (solver(arr, 0, 0, argv) == 1)
         ft_printer(arr);
     else
         write(1, "No Solution", 11);
